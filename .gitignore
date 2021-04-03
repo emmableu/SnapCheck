@@ -1,0 +1,14 @@
+# NPM
+**/node_modules
+**/dist
+*~
+*DS_Store
+
+# Editor
+/.idea
+/.vscode
+
+# Build
+*/dist
+
+
