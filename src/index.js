@@ -1,3 +1,4 @@
+const fs = require('fs');
 import {IDE_Morph} from "isnap/src/gui";
 import {WorldMorph} from "isnap/src/morphic";
 import {extend, extendObject} from "isnap/src/isnap/util";
@@ -22,9 +23,16 @@ function loop() {
     world.doOneCycle();
 }
 
+let projectInputFolder = 'temp-xmls';
 
+let aliasList = fs.readdirSync(projectInputFolder)
+    .filter(fileName =>
+        fs.lstatSync(path.join(projectInputFolder, fileName))
+            .isFile() && fileName !==".DS_Store"
+    );
+aliasList.sort().reverse();
 for (let alias of aliasList) {
-    vm.testProject(alias);
+    vm.testProject(projectInputFolder, alias);
 }
 
 

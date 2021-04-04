@@ -15,10 +15,6 @@ class TestDriver {
         this.removeTestCaseByName = this.vm.stepper.removeTestCaseByName.bind(this.vm.stepper);
         this.clearTestCases = this.vm.stepper.clearTestCases.bind(this.vm.stepper);
         this.state = this.vm.state;
-        this.getSpriteByName = this.vm.state.getSpriteByName
-            .bind(this.vm.state);
-        this.spriteIsTouching = this.vm.state.spriteIsTouching.bind(this.vm.state);
-        this.spriteIsOnEdge = this.vm.state.spriteIsOnEdge.bind(this.vm.state);
         this.isKeyDown = this.vm.inputs.isKeyDown.bind(this.vm.inputs);
         this.inputKey = this.vm.inputs.inputKey.bind(this.vm.inputs);
         this.getFirstVariableValue = this.vm.state.getFirstVariableValue
@@ -28,6 +24,18 @@ class TestDriver {
 
         this.statistics = [];
         this.testCases = [];
+    }
+
+    getSpriteByName (name) {
+        return this.vm.sprites.data[name];
+    }
+
+    spriteIsTouching (nameA, nameB) {
+        return this.getSpriteByName(nameA).touchSprites.includes(nameB);
+    }
+
+    spriteIsOnEdge (name, arrayOfEdges) {
+        return arrayOfEdges.filter(r => this.getSpriteByName(name).touchEdges.includes(r)).length > 0;
     }
 
     clearStatistics () {
@@ -55,7 +63,7 @@ class TestDriver {
     }
 
     getTestCaseByName (name) {
-        const tr = this.testCases.find(tri => tri.name === name);
+        const tr = this.testCases.find(t => t.name === name);
         return this.bindTestCase(tr);
     }
 

@@ -1,4 +1,5 @@
 import {TestCase, Callback} from './test-case'
+import {extendObject} from "isnap/src/isnap/util";
 
 class Stepper {
 
@@ -7,6 +8,7 @@ class Stepper {
          * @type {vm}
          */
         this.vm = vm;
+        this.ide = vm.ide;
 
         /**
          * @type {TestCase[]}
@@ -55,22 +57,23 @@ class Stepper {
         this._callbacks = [];
     }
 
-    async run () {
-        if (!this.vm.projectStarted) {
-            await this.vm.start();
+    start (testCases) {
+        this.reset();
+        for (let testCase of testCases){
+            this.addTestCase(testCase);
         }
-        this.running = true;
-        this.vm.state.update();
-
+        let myself = this;
+        extendObject(this.ide.stage, 'step', function(base){
+            if (this.threads.processes.length>0){
+                myself.step();
+            }
+            base.call(this);
+        });
     }
 
-    stop () {
-        console.log('stop stepper');
-        this.running = false;
-    }
 
     step () {
-
+        this.vm.state.update();
         this.stepCount++;
         // console.log(this.testCases);
 
@@ -124,19 +127,6 @@ class Stepper {
 
         this.vm.inputs.tick();
 
-        /* this.vm.resume();
-        return new Promise(resolve =>
-            setTimeout(() => {
-                this.vm.pause();
-                this.vm.state.update();
-
-                resolve(this.STEP_FINISHED);
-            }, this._stepDuration)
-        );*/
-    }
-
-    static get STEP_FINISHED () {
-        return 'step_done';
     }
 }
 

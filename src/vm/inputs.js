@@ -1,4 +1,4 @@
-class Inputs {
+class Input {
 
     constructor (id, timeout = 1, release = () => null) {
 
@@ -31,12 +31,15 @@ class Inputs {
     }
 }
 
-class Input {
+class Inputs {
 
     constructor (vm) {
+        /**
+         * @type{vm}
+         */
         this.vm = vm;
         /**
-         * @type{Array<Inputs>}
+         * @type{Array<Input>}
          */
         this._inputs = [];
 
