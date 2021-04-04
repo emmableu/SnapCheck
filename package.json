@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "html-webpack-plugin": "^5.3.1",
-    "isnap": "git+https://github.com/emmableu/SnapModule.git#snap-module"
+    "isnap": "git+https://github.com/emmableu/SnapModule.git#snap-module",
+    "lodash": "latest"
   }
 }
