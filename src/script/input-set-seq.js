@@ -1,12 +1,12 @@
 export const inputSetSeq = [
-    {name: ['empty+space', 'upKey', 'threeSecStateUnchanged'],
+    {name: ['waitToPressSpace','pressSpaceKey', 'upKey', 'threeSecStateUnchanged'],
         duration: '15000'},
-    {name: ['empty+space', 'downKey', 'threeSecStateUnchanged'],
+    {name: ['waitToPressSpace','pressSpaceKey', 'downKey', 'threeSecStateUnchanged'],
         duration: '15000'},
-    {name: ['empty+space', 'followBall', 'threeSecStateUnchanged'],
+    {name: ['waitToPressSpace','pressSpaceKey', 'followBall', 'threeSecStateUnchanged'],
         duration: '15000'},
-    {name: ['empty+space', 'followBall', 'evadeBall', 'threeSecStateUnchanged'],
+    {name: ['waitToPressSpace','pressSpaceKey', 'followBall', 'evadeBall', 'threeSecStateUnchanged'],
         duration: '15000'},
-    {name: ['empty+space', 'followBall', 'evadeBall', 'threeSecStateUnchanged'],
+    {name: ['waitToPressSpace','pressSpaceKey', 'followBall', 'evadeBall', 'threeSecStateUnchanged'],
         duration: '15000'}
 ];

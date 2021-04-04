@@ -6,6 +6,7 @@ import {Stage} from "./stage"
 import {State} from "./state"
 import {Inputs} from "./inputs"
 import {TestDriver} from "./test-driver";
+import {Sprites} from "./sprites";
 
 const _ = require('lodash');
 
@@ -14,13 +15,12 @@ class VM {
 
     constructor (ide) {
         this.ide = ide; //@type {IDE_Morph}
-        this.projectStarted = false;
         this.stepper = new Stepper(this);
         this.inputs = new Inputs(this);
         this.stage = new Stage(this);
+        this.sprites = new Sprites(this);
+        this.state = new State(this);
         this.testDriver = new TestDriver(this);
-        // this.inputsSeq =
-        // this.allTests = inputScript.concat(testScript); // a list of @type {TestCase}s.
     }
 
     reset () {
@@ -52,20 +52,19 @@ class VM {
     };
 
      // load file, add inputs and tests, based on file name (alias).
-    // i is the number of time (each time use different inputs)
-    async testProject (alias, projectXML){
+    // str is the project xml.
+    async testProject (alias, str){
         for (let i = 0; i < inputSetSeq.length; i++) {
-            console.log("str: ", projectXML);
             let msg;
             let testCases = testScript.concat(inputScript.filter(
                 (el) => {
-                    inputSetSeq[i].name.includes(el.name);
-                }
-            ));
+                    return inputSetSeq[i].name.includes(el.name)
+                }));
+            console.log('testCases: ', testCases);
             this.ide.nextSteps([
                 () => msg = this.ide.showMessage('Opening project...'),
                 () => {
-                    this.ide.rawOpenProjectString(projectXML);
+                    this.ide.rawOpenProjectString(str);
                     msg.destroy();
                 },
                 () => {

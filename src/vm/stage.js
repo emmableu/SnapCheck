@@ -1,7 +1,6 @@
 class Stage {
     constructor (vm) {
         this.ide = vm.ide;
-        this.update();
     }
     update() {
         let globalVars = this.ide.stage.globalVariables().vars;

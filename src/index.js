@@ -15,37 +15,40 @@ window.onload = function () {
     ide = new IDE_Morph();
     ide.openIn(world);
     vm = new VM(ide);
+    test();
     loop();
-    if (window.onWorldLoaded) {
-        window.onWorldLoaded();
-    }
 };
 function loop() {
     requestAnimationFrame(loop);
     world.doOneCycle();
 }
 console.log("$: ", $);
-const getProjectList = async function () {
+const getAliasList = async function () {
     return await Promise.resolve(
         $.ajax({
-            url:`${serverUrl}/project_list`,
+            url:`${serverUrl}/alias_list`,
             type: "GET",
             crossDomain: true
         }));
 };
-const getProject = async function (alias) {
-    return await Promise.resolve($.get({
-        url: `${serverUrl}/project_file/${alias}`,
+const getFile = async function (alias) {
+    let str = await Promise.resolve($.get({
+        url: `${serverUrl}/alias_file/${alias}`,
         dataType: 'text'
     }));
+    return str.replace(/\\/gm, '');
 };
 
 const test = async function () {
-    let projectList = await getProjectList();
-    for (let alias of projectList) {
-        let projectXML = getProject(alias);
-        vm.testProject(alias, projectXML).then(r => null);
+    let aliasList = await getAliasList();
+    console.log("aliasList: ", aliasList);
+    for (let alias of aliasList) {
+        let str = await getFile(alias);
+        await vm.testProject(alias, str);
     }
 };
 
-test();
+// vm = new VM(ide);
+
+
+

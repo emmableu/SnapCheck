@@ -1,7 +1,6 @@
 class State {
     constructor (vm) {
         this.vm = vm;
-        this.update();
     }
     update () {
         let targetSeq = [this.vm.stage, this.vm.sprites];
@@ -10,14 +9,11 @@ class State {
         }
     }
 
-    getFirstVariableValue (isCur = true) {
+    getFirstVariableValue () {
         /**
          * @type{Any}
          */
-        if (isCur) {
-            return this.variableCache.cur.firstVariable;
-        }
-        return this.variableCache.old.firstVariable;
+        return this.vm.ide.stage.data.stageVar;
 
     }
 }

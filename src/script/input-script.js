@@ -5,7 +5,7 @@ const inputScript =
             name: 'waitToPressSpace',
             precondition: (t) => true,
             callback: (t, oldState) => {
-                t.removeTestCaseByName('testBallNotMoveBeforeSpace');
+                // t.removeTestCaseByName('testBallNotMoveBeforeSpace');
                 t.addTestCaseByName('pressSpaceKey');
             },
             stateSaver: (t) => null,

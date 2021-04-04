@@ -46,7 +46,7 @@ class Inputs {
     }
 
     inputKey (key, duration) {
-        this.vm.stage.fireKeyEvent(key);
+        this.vm.ide.stage.fireKeyEvent(key);
 
         const keyInput = this._inputs.find(x => x.name === key);
         if (keyInput) {
@@ -55,7 +55,7 @@ class Inputs {
             this._inputs.push(new Input(
                 key,
                 duration,
-                () => this.vm.stage.removePressedKey(key)
+                () => this.vm.ide.stage.removePressedKey(key)
             ));
         }
     }
@@ -75,7 +75,7 @@ class Inputs {
     }
 
     get keysDown () {
-        const keysPressed = this.vm.stage.keysPressed;
+        const keysPressed = this.vm.ide.stage.keysPressed;
         return Object.keys(keysPressed).filter(k => keysPressed[k]);
     }
 
