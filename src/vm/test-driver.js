@@ -1,4 +1,4 @@
-const {TestCase} = require('./testCase');
+const {TestCase} = require('./test-case');
 const _ = require('lodash');
 
 

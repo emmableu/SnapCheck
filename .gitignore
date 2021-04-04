@@ -12,3 +12,10 @@
 */dist
 *xmls
 
+back_end_express
+
+*project_list
+
+back_end/*project_list
+*.idea
+back_end/__pycache__

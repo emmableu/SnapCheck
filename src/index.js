@@ -1,10 +1,12 @@
-const fs = require('fs');
+import jQuery from "jquery";
+window.$ = window.jQuery = jQuery;
 import {IDE_Morph} from "isnap/src/gui";
 import {WorldMorph} from "isnap/src/morphic";
-import {extend, extendObject} from "isnap/src/isnap/util";
 import {VM} from "./vm/vm"
 
 let world, ide, vm;
+// const serverUrl = 'http://localhost:3000';
+const serverUrl = 'http://localhost:5000';
 
 window.onload = function () {
     world = new WorldMorph(document.getElementById('world'),
@@ -22,17 +24,28 @@ function loop() {
     requestAnimationFrame(loop);
     world.doOneCycle();
 }
+console.log("$: ", $);
+const getProjectList = async function () {
+    return await Promise.resolve(
+        $.ajax({
+            url:`${serverUrl}/project_list`,
+            type: "GET",
+            crossDomain: true
+        }));
+};
+const getProject = async function (alias) {
+    return await Promise.resolve($.get({
+        url: `${serverUrl}/project_file/${alias}`,
+        dataType: 'text'
+    }));
+};
 
-let projectInputFolder = 'temp-xmls';
+const test = async function () {
+    let projectList = await getProjectList();
+    for (let alias of projectList) {
+        let projectXML = getProject(alias);
+        vm.testProject(alias, projectXML).then(r => null);
+    }
+};
 
-let aliasList = fs.readdirSync(projectInputFolder)
-    .filter(fileName =>
-        fs.lstatSync(path.join(projectInputFolder, fileName))
-            .isFile() && fileName !==".DS_Store"
-    );
-aliasList.sort().reverse();
-for (let alias of aliasList) {
-    vm.testProject(projectInputFolder, alias);
-}
-
-
+test();

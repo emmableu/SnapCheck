@@ -1,16 +1,14 @@
-import {testReportSet} from "./../script/test-set"
 import {inputSetSeq} from "./../script/input-set-seq"
 import {testScript} from "./../script/test-script"
 import {inputScript} from "./../script/input-script"
-const fs = require('fs');
-
-const _ = require('lodash');
-
 import {Stepper} from "./stepper";
 import {Stage} from "./stage"
 import {State} from "./state"
 import {Inputs} from "./inputs"
 import {TestDriver} from "./test-driver";
+
+const _ = require('lodash');
+
 
 class VM {
 
@@ -55,10 +53,9 @@ class VM {
 
      // load file, add inputs and tests, based on file name (alias).
     // i is the number of time (each time use different inputs)
-    async testProject (projectInputFolder, alias){
+    async testProject (alias, projectXML){
         for (let i = 0; i < inputSetSeq.length; i++) {
-            let str = fs.readFile(projectInputFolder, alias);
-            console.log("str: ", str);
+            console.log("str: ", projectXML);
             let msg;
             let testCases = testScript.concat(inputScript.filter(
                 (el) => {
@@ -68,7 +65,7 @@ class VM {
             this.ide.nextSteps([
                 () => msg = this.ide.showMessage('Opening project...'),
                 () => {
-                    this.ide.rawOpenProjectString(str);
+                    this.ide.rawOpenProjectString(projectXML);
                     msg.destroy();
                 },
                 () => {
