@@ -2,7 +2,7 @@ const {TestCase} = require('./test-case');
 const _ = require('lodash');
 
 
-class TestDriver {
+class TestHelper {
 
     constructor (vm) {
 
@@ -19,11 +19,8 @@ class TestDriver {
         this.inputKey = this.vm.inputs.inputKey.bind(this.vm.inputs);
         this.getFirstVariableValue = this.vm.state.getFirstVariableValue
             .bind(this.vm.state);
-
         this.random = _.random.bind(_);
-
-        this.statistics = [];
-        this.testCases = [];
+        this.statistics = []
     }
 
     getSpriteByName (name) {
@@ -63,7 +60,7 @@ class TestDriver {
     }
 
     getTestCaseByName (name) {
-        const tr = this.testCases.find(t => t.name === name);
+        const tr = this.vm.stepper.testCases.find(t => t.name === name);
         return this.bindTestCase(tr);
     }
 
@@ -86,4 +83,4 @@ class TestDriver {
     }
 }
 
-export {TestDriver};
+export {TestHelper};

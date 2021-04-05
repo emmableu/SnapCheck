@@ -13,7 +13,7 @@ class State {
         /**
          * @type{Any}
          */
-        return this.vm.ide.stage.data.stageVar;
+        return this.vm.stage.data.stageVar;
 
     }
 }

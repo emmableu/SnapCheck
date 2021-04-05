@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 from flask_restful import Resource, Api
 import xml.etree.ElementTree as ET
 import os
@@ -24,9 +24,15 @@ class ReadFile(Resource):
         f.close()
         return content
 
+class PostStatistics(Resource):
+    def post(self, alias):
+        print(request.form)
+
+
 
 api.add_resource(ReadList, '/alias_list')
 api.add_resource(ReadFile, '/alias_file/<string:alias>')
+api.add_resource(PostStatistics, '/post_statistics/<string:alias>')
 
 if __name__ == '__main__':
     app.run(debug=True)

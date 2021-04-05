@@ -38,13 +38,18 @@ const getFile = async function (alias) {
     }));
     return str.replace(/\\/gm, '');
 };
+const postStatistics = async function (alias, stat) {
+    console.log('postingStats');
+    await $.post(`${serverUrl}/post_statistics/${alias}`, stat).promise();
+};
 
 const test = async function () {
     let aliasList = await getAliasList();
     console.log("aliasList: ", aliasList);
     for (let alias of aliasList) {
         let str = await getFile(alias);
-        await vm.testProject(alias, str);
+        let stat = await vm.testProject(alias, str);
+        await postStatistics(alias, stat);
     }
 };
 

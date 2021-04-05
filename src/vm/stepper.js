@@ -1,6 +1,6 @@
 import {TestCase, Callback} from './test-case'
 import {extendObject} from "isnap/src/isnap/util";
-import {TestDriver} from "./test-driver";
+import {TestHelper} from "./test-helper";
 
 class Stepper {
 
@@ -30,13 +30,6 @@ class Stepper {
          * @type {Callback[]}
          */
         this._callbacks = [];
-
-        /**
-         * @type {number}
-         */
-        this._stepDuration = 50;
-
-
     }
 
     reset () {
@@ -61,7 +54,8 @@ class Stepper {
     start (testCases) {
         this.reset();
         for (let testCase of testCases){
-            this.addTestCase(this.vm.testDriver.bindTestCase(testCase));
+            console.log("testCase: ", testCase);
+            this.addTestCase(this.vm.testHelper.bindTestCase(testCase));
         }
         let myself = this;
         extendObject(this.ide.stage, 'step', function(base){
@@ -82,7 +76,7 @@ class Stepper {
         this.testCases.forEach(t => {
             t._precondition = t.precondition();
         });
-        console.log('this.testCases: ', this.testCases);
+        // console.log('this.testCases: ', this.testCases);
         // firing testCases are those whose callback will be added
         const firingTestCases = this.testCases
             .filter(t => t.active)

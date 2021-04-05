@@ -1,11 +1,12 @@
 import {inputSetSeq} from "./../script/input-set-seq"
 import {testScript} from "./../script/test-script"
+import {testReportSet} from "./../script/test-report-set"
 import {inputScript} from "./../script/input-script"
 import {Stepper} from "./stepper";
 import {Stage} from "./stage"
 import {State} from "./state"
 import {Inputs} from "./inputs"
-import {TestDriver} from "./test-driver";
+import {TestHelper} from "./test-helper";
 import {Sprites} from "./sprites";
 
 const _ = require('lodash');
@@ -20,21 +21,15 @@ class VM {
         this.stage = new Stage(this);
         this.sprites = new Sprites(this);
         this.state = new State(this);
-        this.testDriver = new TestDriver(this);
-    }
-
-    reset () {
-        this.stepper.reset();
-        this.instrumenter.reset();
-        this.inputs.reset();
-        this.projectStarted = false;
+        this.testHelper = new TestHelper(this);
+        this.testReportSet = testReportSet;
     }
 
     exitCondition (r, curDuration)  {
         // console.log("SnapCheck.testController.statistics: ", SnapCheck.testController.statistics);
         const timeOutCall = setTimeout(r, curDuration);
         const myInterval= setInterval(()=> {
-            const threeSecUnChangedStat = this.testDriver.statistics.filter((r) => {
+            const threeSecUnChangedStat = this.testHelper.statistics.filter((r) => {
                 return r.name === 'threeSecStateUnchanged'
             });
 
@@ -54,6 +49,7 @@ class VM {
      // load file, add inputs and tests, based on file name (alias).
     // str is the project xml.
     async testProject (alias, str){
+        let stat = {};
         for (let i = 0; i < inputSetSeq.length; i++) {
             let msg;
             let testCases = testScript.concat(inputScript.filter(
@@ -73,8 +69,13 @@ class VM {
             ]);
             const curDuration = inputSetSeq[i].duration;
             await new Promise((r) => this.exitCondition(r, curDuration));
-            // stop();
+            for (const item of this.testHelper.statistics) {
+                // console.log(item.name);
+                stat[item.name][item.status ? 'success' : 'fail']++;
+            }
         }
+        console.log("stat: ", stat);
+        return stat;
     }
 }
 
