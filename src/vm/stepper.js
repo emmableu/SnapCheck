@@ -61,7 +61,7 @@ class Stepper {
             }
         }
         let myself = this;
-        extend(Morph, 'step', function(base, deadline){
+        extend(Process, 'runStep', function(base, deadline){
             if (this.myInterval !== undefined){
                 clearInterval(this.myInterval)
             }
