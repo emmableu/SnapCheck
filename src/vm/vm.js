@@ -42,7 +42,7 @@ class VM {
                     console.log("interval and timeout cleared")
                 }
             }
-        }, 1000);
+        }, 100);
 
     };
 

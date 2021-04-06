@@ -2,11 +2,23 @@ import jQuery from "jquery";
 window.$ = window.jQuery = jQuery;
 import {IDE_Morph} from "isnap/src/gui";
 import {WorldMorph} from "isnap/src/morphic";
+import {Process} from "isnap/src/runtime-threads";
 import {VM} from "./vm/vm"
+import {extend, extendObject} from "isnap/src/isnap/util";
 
 let world, ide, vm;
 // const serverUrl = 'http://localhost:3000';
 const serverUrl = 'http://localhost:5000';
+const accelerationFactor = 10;
+
+extend(Process, 'runStep', function(base, deadline){
+    if (this.myInterval !== undefined){
+        clearInterval(this.myInterval)
+    }
+    setInterval(()=>{
+        base.call(this, deadline);
+    }, Math.floor(1000/(60*accelerationFactor)))
+});
 
 window.onload = function () {
     world = new WorldMorph(document.getElementById('world'),
