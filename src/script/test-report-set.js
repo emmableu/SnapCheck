@@ -9,5 +9,6 @@ export const testReportSet = [
     "paddle_score",
     "edge_bounce",
     "reset_score",
-    "reset_ball"
+    "reset_ball",
+    'threeSecStateUnchanged'
 ];

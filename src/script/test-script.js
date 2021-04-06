@@ -31,7 +31,7 @@ const testScript =
             },
             stateSaver: (t) => {
                 return {
-                    paddleY: t.getSpriteByName('Right Paddle', false).posY,
+                    paddleY: t.getSpriteByName('Right Paddle', 'old').posY,
                     time: Date.now()
                 }},
             delay: 5,
@@ -57,7 +57,7 @@ const testScript =
             },
             stateSaver: (t) => {
                 return {
-                    paddleY: t.getSpriteByName('Right Paddle', false).posY,
+                    paddleY: t.getSpriteByName('Right Paddle', 'old').posY,
                     time: Date.now()
                 }},
             delay: 5,
@@ -80,7 +80,7 @@ const testScript =
             },
             stateSaver: (t) => {
                 return {
-                    paddleY: t.getSpriteByName('Right Paddle', false).posY,
+                    paddleY: t.getSpriteByName('Right Paddle', 'old').posY,
                     time: Date.now()
                 }},
             delay: 5,
@@ -102,7 +102,7 @@ const testScript =
             },
             stateSaver: (t) => {
                 return {
-                    paddleY:  t.getSpriteByName('Right Paddle', false).posY,
+                    paddleY:  t.getSpriteByName('Right Paddle', 'old').posY,
                     time: Date.now()
                 }},
             delay: 5,
@@ -128,7 +128,7 @@ const testScript =
             },
             stateSaver: (t) => {
                 return {
-                    paddleY: t.getSpriteByName('Right Paddle', false).posY,
+                    paddleY: t.getSpriteByName('Right Paddle', 'old').posY,
                     time: Date.now()
                 }},
             delay: 5,
@@ -150,7 +150,7 @@ const testScript =
             },
             stateSaver: (t) => {
                 return {
-                    paddleY:  t.getSpriteByName('Right Paddle', false).posY,
+                    paddleY:  t.getSpriteByName('Right Paddle', 'old').posY,
                     time: Date.now()
                 }},
             delay: 5,
@@ -206,6 +206,7 @@ const testScript =
             name: 'paddle_bounce',
             precondition: (t) => t.spriteIsTouching('Right Paddle', 'Ball'),
             callback: (t, oldState) => {
+                console.log('after: ', t.getSpriteByName('Ball').dir);
                 const dirB = t.getSpriteByName('Ball').dir;
                 const xB = t.getSpriteByName('Ball').posX;
                 const yB = t.getSpriteByName('Ball').posY;
@@ -238,29 +239,33 @@ const testScript =
                 }
             },
             stateSaver: (t) =>
-                ({ballDir: t.getSpriteByName('Ball', false).dir,
-                    ballX: t.getSpriteByName('Ball', false).posX,
-                    ballY: t.getSpriteByName('Ball', false).posY,
-                    time: Date.now()}),
-            delay: 10,
+                {   console.log('before: ', t.getSpriteByName('Ball', 'old').dir);
+                    return {ballDir: t.getSpriteByName('Ball', 'old').dir,
+                    ballX: t.getSpriteByName('Ball', 'old').posX,
+                    ballY: t.getSpriteByName('Ball', 'old').posY,
+                    time: Date.now()}},
+            delay: 1,
             once: false,
-            addOnStart: true
+            addOnStart: true,
+            debounce: true
         },
         {
             name: 'paddle_score',
             precondition: (t) => t.spriteIsTouching('Right Paddle', 'Ball'),
             callback: (t, oldState) => {
-                const score = t.getFirstVariableValue();
-                if (score && (score.value !== oldState.score.value)) {
+                const score = t.getAllVars();
+                console.log("score after paddle boounc: ", score);
+                if (score > oldState.score) {
                     t.reportCase('paddle_score', true);
                 } else {
                     t.reportCase('paddle_score', false);
                 }
             },
             stateSaver: (t) =>
-                ({score: t.getFirstVariableValue(false), time: Date.now()}),
-            delay: 10,
+                ({ score: t.getAllVars('old')}),
+            delay: 2,
             once: false,
+            debounce: true,
             addOnStart: true
         },
 
@@ -277,7 +282,7 @@ const testScript =
                 }
             },
             stateSaver: (t) =>  {
-                return {ballDir: t.getSpriteByName('Ball', false).dir, time: Date.now()}
+                return {ballDir: t.getSpriteByName('Ball', 'old').dir, time: Date.now()}
             },
             delay: 0,
             once: false,
@@ -288,18 +293,20 @@ const testScript =
         {
             name: 'reset_score',
             precondition: (t) => t.spriteIsOnEdge('Ball', ['right']) &&
-                t.getFirstVariableValue() && t.getFirstVariableValue().value != 0,
+                t.getAllVars() !== 0,
             callback: (t, oldState) => {
-                const score = t.getFirstVariableValue();
-                if (score && (score.value == 0)) {
+                const score = t.getAllVars();
+                if (score < oldState.score) {
                     t.reportCase('reset_score', true);
                 } else {
                     t.reportCase('reset_score', false);
                 }
             },
             stateSaver: (t) => {
-                return null;},
-            delay: 10,
+                return {
+                    score: t.getAllVars('old')
+                };},
+            delay: 3,
             once: false,
             debounce: true,
             addOnStart: true
@@ -317,8 +324,10 @@ const testScript =
                 }
                 t.addTestCaseByName('waitToPressSpace');
             },
-            stateSaver: (t) => null,
-            delay: 0,
+            stateSaver: (t) => ({
+                score: t.getAllVars('old')
+            }),
+            delay: 5,
             once: false,
             debounce: true,
             addOnStart: true
@@ -335,33 +344,6 @@ const testScript =
             delay: 50,
             once: true,
             addOnStart: true
-        },
-
-        {
-            name: 'ballTouchPaddleStopFollow',
-            precondition: (t) => t.spriteIsTouching('Right Paddle', 'Ball'),
-            callback: (t, oldState) => {
-                t.removeTestCaseByName('followBall');
-                t.addTestCaseByName('evadeBall');
-            },
-            stateSaver: (t) => null,
-            delay: 0,
-            once: false,
-            addOnStart: false,
-            debounce: true
-        },
-        {
-            name: 'ballTouchRightEdgeStartFollow',
-            precondition: (t) => t.spriteIsOnEdge('Ball', ['right']),
-            callback: (t, oldState) => {
-                t.removeTestCaseByName('evadeBall');
-                t.addTestCaseByName('followBall');
-            },
-            stateSaver: (t) => null,
-            delay: 25,
-            once: false,
-            addOnStart: false,
-            debounce: true
         }
     ];
 export {testScript};

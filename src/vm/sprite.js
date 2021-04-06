@@ -35,7 +35,7 @@ class Sprite {
     }
 
      calcEdgesTouched(spriteMorph) {
-        const padding = 10;
+        const padding = 20;
         const fb = spriteMorph.nestingBounds();
         const stage = this.ide.stage;
         const edgesTouched = [];

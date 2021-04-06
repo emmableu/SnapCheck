@@ -1,6 +1,8 @@
 import {TestCase, Callback} from './test-case'
-import {extendObject} from "isnap/src/isnap/util";
+import {extend, extendObject} from "isnap/src/isnap/util";
 import {TestHelper} from "./test-helper";
+import {Process} from "isnap/src/threads";
+import {Morph} from "isnap/src/morphic";
 
 class Stepper {
 
@@ -59,12 +61,16 @@ class Stepper {
             }
         }
         let myself = this;
-        extendObject(this.ide.stage, 'step', function(base){
-            if (this.threads.processes.length>0){
-                myself.step();
+        extend(Morph, 'step', function(base, deadline){
+            if (this.myInterval !== undefined){
+                clearInterval(this.myInterval)
             }
-            base.call(this);
+            this.myInterval = setInterval(()=>{
+                base.call(this, deadline);
+                myself.step();
+            }, Math.floor(1000/(60*myself.vm.accelerationFactor)))
         });
+
         this.ide.stage.fireGreenFlagEvent();
     }
 

@@ -5,11 +5,11 @@ const inputScript =
             name: 'waitToPressSpace',
             precondition: (t) => true,
             callback: (t, oldState) => {
-                // t.removeTestCaseByName('testBallNotMoveBeforeSpace');
+                t.removeTestCaseByName('testBallNotMoveBeforeSpace');
                 t.addTestCaseByName('pressSpaceKey');
             },
             stateSaver: (t) => null,
-            delay: 50,
+            delay: 10,
             once: true,
             addOnStart: true
         },
@@ -37,9 +37,9 @@ const inputScript =
                     return;
                 }
                 if (paddleY < oldState.ballY - 5) {
-                    t.inputKey('up arrow', 2);
+                    t.inputKey('up arrow', 10);
                 } else if (paddleY > oldState.ballY + 5) {
-                    t.inputKey('down arrow', 2);
+                    t.inputKey('down arrow', 10);
                 }
             },
             stateSaver: (t) => {
@@ -193,7 +193,7 @@ const inputScript =
                     ball: t.getSpriteByName('Ball')
                 }
             },
-            delay: 100,
+            delay: 5000,
             once: false,
             addOnStart: true
         },

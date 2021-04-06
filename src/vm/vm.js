@@ -23,47 +23,33 @@ class VM {
         this.state = new State(this);
         this.testHelper = new TestHelper(this);
         this.testReportSet = testReportSet;
+        this.accelerationFactor = 2;
+        this.stat = {};
+        // this.timeOutCall = null;
+        // this.myInterval = null;
     }
 
-    exitCondition (r, curDuration)  {
-        // console.log("SnapCheck.testController.statistics: ", SnapCheck.testController.statistics);
-        const timeOutCall = setTimeout(r, curDuration);
-        const myInterval= setInterval(()=> {
-            const threeSecUnChangedStat = this.testHelper.statistics.filter((r) => {
-                return r.name === 'threeSecStateUnchanged'
-            });
-
-            console.log('SnapCheck.stat[\'threeSecStateUnchanged\']: ', threeSecUnChangedStat);
-            if (threeSecUnChangedStat.length > 0) {
-                if (threeSecUnChangedStat[threeSecUnChangedStat.length - 1].status) {
-                    clearTimeout(timeOutCall);
-                    clearInterval(myInterval);
-                    r();
-                    console.log("interval and timeout cleared")
-                }
-            }
-        }, 100);
-
-    };
 
     reset () {
         this.stepper.reset();
+        // clearTimeout(this.timeOutCall);
+        // clearInterval(this.myInterval);
     }
      // load file, add inputs and tests, based on file name (alias).
     // str is the project xml.
     async testProject (alias, str){
-        let stat = {};
         for (const item of this.testReportSet) {
-            stat[item] = {'success': 0, 'fail': 0};
+            this.stat[item] = {'success': 0, 'fail': 0};
         }
         for (let i = 0; i < inputSetSeq.length; i++) {
             this.reset();
+            this.stat['threeSecStateUnchanged'] = {'success': 0, 'fail': 0};
             let msg;
             let testCases = testScript.concat(inputScript.filter(
                 (el) => {
                     return inputSetSeq[i].name.includes(el.name)
                 }));
-            console.log('testCases: ', testCases);
+            // console.log('testCases: ', testCases);
             this.ide.nextSteps([
                 () => msg = this.ide.showMessage('Opening project...'),
                 () => {
@@ -74,17 +60,40 @@ class VM {
                     this.stepper.start(testCases);
                 }
             ]);
-            const curDuration = inputSetSeq[i].duration;
-            await new Promise((r) => this.exitCondition(r, curDuration));
-            for (const item of this.testHelper.statistics) {
-                if (Object.keys(stat).includes(item.name)) {
-                    stat[item.name][item.status ? 'success' : 'fail']++;
+            let curDuration = inputSetSeq[i].duration;
+            // console.log("-------------------------i----------------: ", i);
+            let myself = this;
+            function delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms))
+            }
+            let loopCounter = 0;
+            async function loop() {
+                console.log("myself.stat.threeSecStateUnchanged.success: ",
+                    myself.stat.threeSecStateUnchanged.success);
+                console.log('loopCounter: ', loopCounter);
+                while ((myself.stat.threeSecStateUnchanged.success <= 3) &&
+                       loopCounter < curDuration/500) {
+                    loopCounter ++;
+                    await delay(500);
                 }
             }
-            console.log("stat: ", stat);
+            await loop();
+            console.log("out of await");
+            // for (const item of this.testHelper.statistics) {
+            //     if (Object.keys(stat).includes(item.name)) {
+            //         stat[item.name][item.status ? 'success' : 'fail']++;
+            //     }
+            // }
+            this.stat['threeSecStateUnchanged'].success = 10;
+            let conditionsMet = Object.keys(this.stat).map((m) => this.stat[m].success + this.stat[m].fail);
+            console.log(conditionsMet);
+            if (Math.min(...conditionsMet) > 5) {
+                console.log("met early stat: ", this.stat);
+                return this.stat;
+            }
         }
-        console.log("stat: ", stat);
-        return stat;
+        console.log("stat: ", this.stat);
+        return this.stat;
     }
 }
 

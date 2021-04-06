@@ -12,9 +12,10 @@ class ReadList(Resource):
     def get(self):
         alias_list = os.listdir('alias_list')
         if '.DS_Store' in alias_list:
-            alias_list = alias_list.remove('.DS_Store')
-        alias_list.sort(key=lambda file: (
-            int(file.split(".")[0].split('_')[0]), int(file.split(".")[0].split('_')[1])), reverse=True)
+            alias_list.remove('.DS_Store')
+        print("alias_list: ", alias_list)
+        # alias_list.sort(key=lambda file: (
+        #     int(file.split(".")[0].split('_')[0]), int(file.split(".")[0].split('_')[1])), reverse=True)
         return alias_list
 
 
@@ -30,10 +31,10 @@ class PostStatistics(Resource):
     def post(self, alias):
         new_row = {'alias': alias}
         new_row.update(eval(list(request.form.to_dict().keys())[0]))
-        try:
-            snapcheck_df = load_obj('snapcheck_df', 'data')
-        except:
+        if alias == '999_13.xml':
             snapcheck_df = pd.DataFrame(columns = list(new_row.keys()))
+        else:
+            snapcheck_df = load_obj('snapcheck_df', 'data')
         snapcheck_df.loc[len(snapcheck_df)] = new_row
         save_obj(snapcheck_df, 'snapcheck_df', 'data')
         return

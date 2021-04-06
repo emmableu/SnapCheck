@@ -17,14 +17,19 @@ class TestHelper {
         this.state = this.vm.state;
         this.isKeyDown = this.vm.inputs.isKeyDown.bind(this.vm.inputs);
         this.inputKey = this.vm.inputs.inputKey.bind(this.vm.inputs);
-        this.getFirstVariableValue = this.vm.state.getFirstVariableValue
+        this.getAllVars = this.vm.state.getAllVars
             .bind(this.vm.state);
         this.random = _.random.bind(_);
         this.statistics = []
     }
 
-    getSpriteByName (name) {
-        return this.vm.sprites.data[name];
+    getSpriteByName (name, state='cur') {
+        if (state === 'cur') {
+            return this.vm.sprites.data[name];
+        }
+        else {
+            return this.vm.state.old.sprites[name];
+        }
     }
 
     spriteIsTouching (nameA, nameB) {
@@ -40,7 +45,9 @@ class TestHelper {
     }
 
     reportCase (testName, status, info) {
-        this.statistics.push({name: testName, status: status, info: info});
+        if (Object.keys(this.vm.stat).includes(testName)) {
+            this.vm.stat[testName][status ? 'success' : 'fail']++;
+        }
     }
 
     bindTestCase (tr) {
