@@ -54,8 +54,9 @@ class Stepper {
     start (testCases) {
         this.reset();
         for (let testCase of testCases){
-            console.log("testCase: ", testCase);
-            this.addTestCase(this.vm.testHelper.bindTestCase(testCase));
+            if (testCase !== undefined) {
+                this.addTestCase(this.vm.testHelper.bindTestCase(testCase));
+            }
         }
         let myself = this;
         extendObject(this.ide.stage, 'step', function(base){

@@ -31,6 +31,11 @@ const inputScript =
             precondition: (t) => true,
             callback: (t, oldState) => {
                 const paddleY = t.getSpriteByName('Right Paddle').posY;
+                const ballY = t.getSpriteByName('Ball').posY;
+                const ballX = t.getSpriteByName('Ball').posX;
+                if (oldState.ballY === ballY && oldState.ballX === ballX){
+                    return;
+                }
                 if (paddleY < oldState.ballY - 5) {
                     t.inputKey('up arrow', 2);
                 } else if (paddleY > oldState.ballY + 5) {
@@ -40,6 +45,7 @@ const inputScript =
             stateSaver: (t) => {
                 return {
                     ballY: t.getSpriteByName('Ball').posY,
+                    ballX: t.getSpriteByName('Ball').posX,
                     time: Date.now()
                 }
             },
@@ -94,12 +100,18 @@ const inputScript =
             precondition: (t) => true,
             callback: (t, oldState) => {
                 const paddleY = t.getSpriteByName('Right Paddle').posY;
+                const ballY = t.getSpriteByName('Ball').posY;
+                const ballX = t.getSpriteByName('Ball').posX;
+                if (oldState.ballY === ballY && oldState.ballX === ballX){
+                    return;
+                }
                 if (paddleY < 170) {
                     t.inputKey('up arrow', 2);
                 }
             },
             stateSaver: (t) => ({
                 ballY: t.getSpriteByName('Ball').posY,
+                ballX: t.getSpriteByName('Ball').posX,
                 time: Date.now()
             }),
             delay: 5,
@@ -140,7 +152,7 @@ const inputScript =
             name: 'upKey',
             precondition: (t) => true,
             callback: (t, oldState) => {
-                t.inputKey('up arrow', 1);
+                t.inputKey('up arrow', 20);
             },
             stateSaver: (t) => null,
             delay: 5,
@@ -151,7 +163,7 @@ const inputScript =
             name: 'downKey',
             precondition: (t) => true,
             callback: (t, oldState) => {
-                t.inputKey('down arrow', 1);
+                t.inputKey('down arrow', 20);
             },
             stateSaver: (t) => null,
             delay: 5,

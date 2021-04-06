@@ -56,12 +56,16 @@ class TestHelper {
     }
 
     addTestCaseByName (name) {
-        this.addTestCase(this.getTestCaseByName(name));
+        if (this.getTestCaseByName(name) !== undefined) {
+            this.addTestCase(this.getTestCaseByName(name));
+        }
     }
 
     getTestCaseByName (name) {
         const tr = this.vm.stepper.testCases.find(t => t.name === name);
-        return this.bindTestCase(tr);
+        if (tr !== undefined) {
+            return this.bindTestCase(tr);
+        }
     }
 
     newTestCase (

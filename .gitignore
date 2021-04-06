@@ -19,3 +19,5 @@ back_end_express
 back_end/*alias_list
 *.idea
 back_end/__pycache__
+
+data

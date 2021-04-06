@@ -33,7 +33,7 @@ class VM {
                 return r.name === 'threeSecStateUnchanged'
             });
 
-            // console.log('SnapCheck.stat[\'threeSecStateUnchanged\']: ', threeSecUnChangedStat);
+            console.log('SnapCheck.stat[\'threeSecStateUnchanged\']: ', threeSecUnChangedStat);
             if (threeSecUnChangedStat.length > 0) {
                 if (threeSecUnChangedStat[threeSecUnChangedStat.length - 1].status) {
                     clearTimeout(timeOutCall);
@@ -42,15 +42,22 @@ class VM {
                     console.log("interval and timeout cleared")
                 }
             }
-        }, 5000);
+        }, 1000);
 
     };
 
+    reset () {
+        this.stepper.reset();
+    }
      // load file, add inputs and tests, based on file name (alias).
     // str is the project xml.
     async testProject (alias, str){
         let stat = {};
+        for (const item of this.testReportSet) {
+            stat[item] = {'success': 0, 'fail': 0};
+        }
         for (let i = 0; i < inputSetSeq.length; i++) {
+            this.reset();
             let msg;
             let testCases = testScript.concat(inputScript.filter(
                 (el) => {
@@ -70,9 +77,11 @@ class VM {
             const curDuration = inputSetSeq[i].duration;
             await new Promise((r) => this.exitCondition(r, curDuration));
             for (const item of this.testHelper.statistics) {
-                // console.log(item.name);
-                stat[item.name][item.status ? 'success' : 'fail']++;
+                if (Object.keys(stat).includes(item.name)) {
+                    stat[item.name][item.status ? 'success' : 'fail']++;
+                }
             }
+            console.log("stat: ", stat);
         }
         console.log("stat: ", stat);
         return stat;

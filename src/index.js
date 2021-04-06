@@ -40,7 +40,7 @@ const getFile = async function (alias) {
 };
 const postStatistics = async function (alias, stat) {
     console.log('postingStats');
-    await $.post(`${serverUrl}/post_statistics/${alias}`, stat).promise();
+    await $.post(`${serverUrl}/post_statistics/${alias}`, JSON.stringify(stat)).promise();
 };
 
 const test = async function () {
