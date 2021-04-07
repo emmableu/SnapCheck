@@ -10,5 +10,4 @@ export const testReportSet = [
     "edge_bounce",
     "reset_score",
     "reset_ball",
-    'threeSecStateUnchanged'
 ];

@@ -62,15 +62,9 @@ class Stepper {
         }
         let myself = this;
         extend(Process, 'runStep', function(base, deadline){
-            if (this.myInterval !== undefined){
-                clearInterval(this.myInterval)
-            }
-            this.myInterval = setInterval(()=>{
                 base.call(this, deadline);
                 myself.step();
-            }, Math.floor(1000/(60*myself.vm.accelerationFactor)))
         });
-
         this.ide.stage.fireGreenFlagEvent();
     }
 

@@ -23,8 +23,8 @@ class VM {
         this.state = new State(this);
         this.testHelper = new TestHelper(this);
         this.testReportSet = testReportSet;
-        this.accelerationFactor = 2;
         this.stat = {};
+        this.stoppedStateProxy = {};
         // this.timeOutCall = null;
         // this.myInterval = null;
     }
@@ -37,13 +37,29 @@ class VM {
     }
      // load file, add inputs and tests, based on file name (alias).
     // str is the project xml.
+
+    exitCondition(r, curDuration) {
+        let timeOutID = setTimeout(r, curDuration);
+        let stoppedState = {};
+        this.stoppedStateProxy = new Proxy(stoppedState, {
+            set: function(stoppedState, key, value){
+                if (key === 'success') {
+                    console.log('updated stoppedState');
+                    window.clearTimeout(timeOutID);
+                    r();
+                }
+                return true;
+            }
+        })
+    }
+
+
     async testProject (alias, str){
         for (const item of this.testReportSet) {
             this.stat[item] = {'success': 0, 'fail': 0};
         }
         for (let i = 0; i < inputSetSeq.length; i++) {
             this.reset();
-            this.stat['threeSecStateUnchanged'] = {'success': 0, 'fail': 0};
             let msg;
             let testCases = testScript.concat(inputScript.filter(
                 (el) => {
@@ -63,28 +79,14 @@ class VM {
             let curDuration = inputSetSeq[i].duration;
             // console.log("-------------------------i----------------: ", i);
             let myself = this;
-            function delay(ms) {
-                return new Promise(resolve => setTimeout(resolve, ms))
-            }
-            let loopCounter = 0;
-            async function loop() {
-                console.log("myself.stat.threeSecStateUnchanged.success: ",
-                    myself.stat.threeSecStateUnchanged.success);
-                console.log('loopCounter: ', loopCounter);
-                while ((myself.stat.threeSecStateUnchanged.success <= 3) &&
-                       loopCounter < curDuration/500) {
-                    loopCounter ++;
-                    await delay(500);
-                }
-            }
-            await loop();
+            await new Promise((r) => this.exitCondition(r, curDuration));
             console.log("out of await");
+            this.stoppedStateProxy = {};
             // for (const item of this.testHelper.statistics) {
             //     if (Object.keys(stat).includes(item.name)) {
             //         stat[item.name][item.status ? 'success' : 'fail']++;
             //     }
             // }
-            this.stat['threeSecStateUnchanged'].success = 10;
             let conditionsMet = Object.keys(this.stat).map((m) => this.stat[m].success + this.stat[m].fail);
             console.log(conditionsMet);
             if (Math.min(...conditionsMet) > 5) {

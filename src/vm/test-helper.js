@@ -45,7 +45,11 @@ class TestHelper {
     }
 
     reportCase (testName, status, info) {
-        if (Object.keys(this.vm.stat).includes(testName)) {
+
+        if (testName === 'threeSecStateUnchanged'){
+            this.vm.stoppedStateProxy[status ? 'success' : 'fail']++;
+        }
+        else if (Object.keys(this.vm.stat).includes(testName)) {
             this.vm.stat[testName][status ? 'success' : 'fail']++;
         }
     }

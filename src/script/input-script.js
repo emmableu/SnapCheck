@@ -193,7 +193,7 @@ const inputScript =
                     ball: t.getSpriteByName('Ball')
                 }
             },
-            delay: 5000,
+            delay: 100,
             once: false,
             addOnStart: true
         },
