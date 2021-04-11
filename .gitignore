@@ -21,3 +21,5 @@ back_end/*alias_list
 back_end/__pycache__
 
 data
+
+back_end/compare.py
