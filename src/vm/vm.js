@@ -8,7 +8,7 @@ import {State} from "./state"
 import {Inputs} from "./inputs"
 import {TestHelper} from "./test-helper";
 import {Sprites} from "./sprites";
-
+const seedrandom = require('seedrandom');
 const _ = require('lodash');
 
 
@@ -24,31 +24,31 @@ class VM {
         this.testHelper = new TestHelper(this);
         this.testReportSet = testReportSet;
         this.stat = {};
-        this.stoppedStateProxy = {};
-        // this.timeOutCall = null;
-        // this.myInterval = null;
+        this.stoppedStateProxy = {'success': 0, 'fail': 0};
+        this.programStarted = false;
     }
 
 
     reset () {
+        this.programStarted = false;
         this.stepper.reset();
-        // clearTimeout(this.timeOutCall);
-        // clearInterval(this.myInterval);
+        this.stoppedStateProxy = {'success': 0, 'fail': 0};
     }
-     // load file, add inputs and tests, based on file name (alias).
-    // str is the project xml.
 
     exitCondition(r, curDuration) {
         let timeOutID = setTimeout(r, curDuration);
-        let stoppedState = {};
+        let myself = this;
+        let stoppedState = {'success': this.stoppedStateProxy.success, 'fail': this.stoppedStateProxy.fail};
         this.stoppedStateProxy = new Proxy(stoppedState, {
             set: function(stoppedState, key, value){
-                if (key === 'success') {
-                    console.log('updated stoppedState');
+                console.log('stoppedState, key, value: ',
+                    stoppedState, key, value);
+                if (key === 'success' && stoppedState.success > 0 && myself.programStarted === true) {
+                    console.log('exit because no movement');
                     window.clearTimeout(timeOutID);
                     r();
                 }
-                return true;
+                return Reflect.set(...arguments);
             }
         })
     }
@@ -59,39 +59,38 @@ class VM {
             this.stat[item] = {'success': 0, 'fail': 0};
         }
         for (let i = 0; i < inputSetSeq.length; i++) {
-            this.reset();
-            let msg;
-            let testCases = testScript.concat(inputScript.filter(
-                (el) => {
-                    return inputSetSeq[i].name.includes(el.name)
-                }));
-            // console.log('testCases: ', testCases);
-            this.ide.nextSteps([
-                () => msg = this.ide.showMessage('Opening project...'),
-                () => {
-                    this.ide.rawOpenProjectString(str);
-                    msg.destroy();
-                },
-                () => {
-                    this.stepper.start(testCases);
-                }
-            ]);
-            let curDuration = inputSetSeq[i].duration;
-            // console.log("-------------------------i----------------: ", i);
-            let myself = this;
-            await new Promise((r) => this.exitCondition(r, curDuration));
-            console.log("out of await");
-            this.stoppedStateProxy = {};
-            // for (const item of this.testHelper.statistics) {
-            //     if (Object.keys(stat).includes(item.name)) {
-            //         stat[item.name][item.status ? 'success' : 'fail']++;
-            //     }
-            // }
-            let conditionsMet = Object.keys(this.stat).map((m) => this.stat[m].success + this.stat[m].fail);
-            console.log(conditionsMet);
-            if (Math.min(...conditionsMet) > 5) {
-                console.log("met early stat: ", this.stat);
-                return this.stat;
+            for (let seed of [4]) {
+            // for (let seed of [4, 6, 14]) {
+                console.log('-----starting---------: ', alias, i, seed);
+                seedrandom(seed.toString(), {global: true});
+                this.reset();
+                let msg;
+                let testCases = testScript.concat(inputScript.filter(
+                    (el) => {
+                        return inputSetSeq[i].name.includes(el.name)
+                    }));
+                // console.log('testCases: ', testCases);
+                this.ide.nextSteps([
+                    () => msg = this.ide.showMessage('Opening project...'),
+                    () => {
+                        this.ide.rawOpenProjectString(str);
+                        msg.destroy();
+                    },
+                    () => {
+                        this.stepper.start(testCases);
+                        this.ide.world().worldCanvas.focus(); //must have this, otherwise, the keyboard press will not have reactions.
+                        window.setTimeout(() => {
+                            this.programStarted = true;
+                        }, 300);
+                    }
+                ]);
+                let curDuration = inputSetSeq[i].duration;
+
+                // await new Promise((r) => this.exitCondition(r, curDuration));
+                await new Promise((r) => setTimeout(r, curDuration));
+                console.log("-----ending---------stat: ", this.stat);
+                // let conditionsMet = Object.keys(this.stat).map((m) => this.stat[m].success + this.stat[m].fail);
+                // console.log(conditionsMet);
             }
         }
         console.log("stat: ", this.stat);

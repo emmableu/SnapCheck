@@ -12,8 +12,8 @@ class Sprite {
 
     update(spriteMorph) {
         this.data = {
-            posX: spriteMorph.xPosition().toFixed(3),
-            posY: spriteMorph.yPosition().toFixed(3),
+            posX: Math.round(spriteMorph.xPosition() * 1000) / 1000,
+            posY: Math.round(spriteMorph.yPosition() * 1000) / 1000,
             size: spriteMorph.size,
             dir: spriteMorph.direction(),
             touchSprites: this.calcTouching(spriteMorph),
@@ -27,6 +27,11 @@ class Sprite {
     }
 
     calcTouching(spriteMorph) {
+        // console.log('toucher sprite: ', spriteMorph.name);
+        // console.log('touchee sprite: ', this.ide.stage.children
+        //     .filter(c => spriteMorph.isTouching(c))
+        //     .map(c => c.name));
+
         return this.ide.stage.children
             .filter(c => (c !== spriteMorph))
             .filter(c => (c instanceof SpriteMorph))

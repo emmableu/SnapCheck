@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "webpack",
-    "watch": "npx webpack serve"
+    "serve": "npx webpack serve --color --no-hot"
   },
   "keywords": [],
   "author": "",
@@ -21,6 +21,7 @@
     "html-webpack-plugin": "^5.3.1",
     "isnap": "git+https://github.com/emmableu/SnapModule.git#snap-module",
     "jquery": "^3.6.0",
-    "lodash": "latest"
+    "lodash": "latest",
+    "seedrandom": "^3.0.5"
   }
 }

@@ -3,6 +3,7 @@ import {extend, extendObject} from "isnap/src/isnap/util";
 import {TestHelper} from "./test-helper";
 import {Process} from "isnap/src/threads";
 import {Morph} from "isnap/src/morphic";
+import {StageMorph} from "isnap/src/objects";
 
 class Stepper {
 
@@ -38,6 +39,9 @@ class Stepper {
         this.clearTestCases();
         this.running = false;
         this.stepCount = 0;
+        extend(StageMorph, 'step', function(base){
+            base.call(this);
+        });
     }
 
     addTestCase (testCase) {
@@ -53,7 +57,7 @@ class Stepper {
         this._callbacks = [];
     }
 
-    start (testCases) {
+    async start (testCases) {
         this.reset();
         for (let testCase of testCases){
             if (testCase !== undefined) {
@@ -61,18 +65,20 @@ class Stepper {
             }
         }
         let myself = this;
-        extend(Process, 'runStep', function(base, deadline){
-                base.call(this, deadline);
-                myself.step();
-        });
+        // await new Promise(r => {setTimeout(r, 100)});
         this.ide.stage.fireGreenFlagEvent();
+        // await new Promise(r => {setTimeout(r, 200)});
+        extend(StageMorph, 'step', function(base){
+            myself.step();
+            base.call(this);
+        });
     }
 
 
     step () {
         this.vm.state.update();
         this.stepCount++;
-        // console.log(this.testCases);
+        // console.log(this.vm.testHelper.spriteIsTouching('Right Paddle', 'Ball') );
 
         this.testCases.forEach(t => {
             t._precondition = t.precondition();

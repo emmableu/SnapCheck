@@ -6,11 +6,9 @@ import {Process} from "isnap/src/runtime-threads";
 import {VM} from "./vm/vm"
 import {extend, extendObject} from "isnap/src/isnap/util";
 
+
 let world, ide, vm;
-// const serverUrl = 'http://localhost:3000';
 const serverUrl = 'http://localhost:5000';
-
-
 
 window.onload = function () {
     world = new WorldMorph(document.getElementById('world'),
@@ -26,7 +24,8 @@ function loop() {
     requestAnimationFrame(loop);
     world.doOneCycle();
 }
-console.log("$: ", $);
+
+
 const getAliasList = async function () {
     return await Promise.resolve(
         $.ajax({
@@ -58,6 +57,5 @@ const test = async function () {
 };
 
 // vm = new VM(ide);
-
 
 

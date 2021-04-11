@@ -18,7 +18,7 @@ const testScript =
         {
             name: 'testMoveUp',
             precondition: (t) => {
-                return t.isKeyDown('up arrow') && t.getSpriteByName('Right Paddle').posY < 145
+                return t.isKeyDown('up arrow') && !t.spriteIsOnEdge('Right Paddle', ['top'])
             },
             callback: function (t, oldState) {
                 const paddleY = t.getSpriteByName('Right Paddle').posY;
@@ -41,8 +41,7 @@ const testScript =
         {
             name: 'testUpMiddle',
             precondition: (t) => {
-                return t.isKeyDown('up arrow') && t.getSpriteByName('Right Paddle').posY >= 145
-                    &&  t.getSpriteByName('Right Paddle').posY < 180
+                return t.isKeyDown('up arrow') && t.spriteIsOnEdge('Right Paddle', ['top'])
             },
             callback: function (t, oldState) {
                 const paddleY = t.getSpriteByName('Right Paddle').posY;
@@ -89,8 +88,9 @@ const testScript =
         },
         {
             name: 'testMoveDown',
-            precondition: (t) =>
-                t.isKeyDown('down arrow') && t.getSpriteByName('Right Paddle').posY > -145,
+            precondition: (t) => {
+                return t.isKeyDown('down arrow') && !t.spriteIsOnEdge('Right Paddle', ['bottom'])
+            },
             callback: function (t, oldState) {
                 const paddleY = t.getSpriteByName('Right Paddle').posY;
                 if (paddleY < oldState.paddleY)
@@ -112,8 +112,7 @@ const testScript =
         {
             name: 'testDownMiddle',
             precondition: (t) => {
-                return t.isKeyDown('down arrow') && t.getSpriteByName('Right Paddle').posY <= -145
-                    &&  t.getSpriteByName('Right Paddle').posY > -180
+                return t.isKeyDown('down arrow') && t.spriteIsOnEdge('Right Paddle', ['bottom'])
             },
             callback: function (t, oldState) {
                 const paddleY = t.getSpriteByName('Right Paddle').posY;
@@ -159,10 +158,19 @@ const testScript =
         },
         {
             name: 'testBallNotMoveBeforeSpace',
-            precondition: (t) => true,
+            precondition: (t) => {
+                const ballX = t.getSpriteByName('Ball').posX;
+                const ballY = t.getSpriteByName('Ball').posY;
+                const oldBallX = t.getSpriteByName('Ball', 'old').posX;
+                const oldBallY = t.getSpriteByName('Ball', 'old').posY;
+                return (ballY === 0 && ballX === 0 && ballX === oldBallX && ballY === oldBallY)
+            },
             callback: function (t, oldState) {
                 const ballX = t.getSpriteByName('Ball').posX;
                 const ballY = t.getSpriteByName('Ball').posY;
+                console.log('testBallNotMoveBeforeSpace');
+                console.log('oldState.ballX: ', oldState.ballX, "oldState.ballY: ", oldState.ballY);
+                console.log('ballX: ', ballX, "ballY: ", ballY);
                 if (ballX === oldState.ballX && ballY === oldState.ballY)
                 {
                     t.reportCase('not_move_before_space', true)
@@ -174,8 +182,8 @@ const testScript =
                 ballX: t.getSpriteByName('Ball').posX,
                 ballY: t.getSpriteByName('Ball').posY
             }),
-            delay: 5,
-            once: false,
+            delay: 80,
+            once: true,
             addOnStart: true
         },
         {
@@ -184,9 +192,12 @@ const testScript =
                 return t.isKeyDown('space');
             },
             callback: function (t, oldState) {
+                console.log('------------testSpaceBallMove------------');
+                console.log('oldState.ballx: ', oldState.ballX);
                 const ballX = t.getSpriteByName('Ball').posX;
+                console.log('ballX: ', ballX);
                 const ballY = t.getSpriteByName('Ball').posY;
-                if (ballX != oldState.ballX || ballY != oldState.ballY)
+                if (ballX !== oldState.ballX || ballY !== oldState.ballY)
                 {
                     t.reportCase('space_move', true);
                 } else {
@@ -198,14 +209,17 @@ const testScript =
                 ballX: t.getSpriteByName('Ball').posX,
                 ballY: t.getSpriteByName('Ball').posY
             }),
-            delay: 5,
-            once: false,
+            delay: 25,
+            once: true,
             addOnStart: true
         },
         {
             name: 'paddle_bounce',
-            precondition: (t) => t.spriteIsTouching('Right Paddle', 'Ball'),
+            precondition: (t) => ((t.spriteIsTouching('Right Paddle', 'Ball') ||
+                t.spriteIsTouching('Ball', 'Right Paddle'))
+            ),
             callback: (t, oldState) => {
+                t.reportCase('space_move', true);
                 console.log('after: ', t.getSpriteByName('Ball').dir);
                 const dirB = t.getSpriteByName('Ball').dir;
                 const xB = t.getSpriteByName('Ball').posX;
@@ -213,22 +227,23 @@ const testScript =
                 const dirA = oldState.ballDir;
                 const xA = oldState.ballX;
                 const yA = oldState.ballY;
-                // console.log("dirA: ", dirA, 'dirB: ', dirB);
-
-                //const ballY = t.getSpriteByName('Ball').posY;
                 const kA = 1/(Math.tan(dirA / 180 * Math.PI));
                 const kB = 1/(Math.tan(dirB / 180 * Math.PI));
 
                 const x = (yB - yA - xB*kB + xA*kA )/(kA - kB);
-                // console.log(`A line:  y = ${kA} (x - ${xA}) + ${yA}`);
-                // console.log(`B line:  y = ${kB} (x - ${xB}) + ${yB}`);
-
                 const paddleX = t.getSpriteByName('Right Paddle').posX;
-                // console.log('paddleX: ', paddleX);
                 if (dirB !== dirA) {
-                    if (dirB + dirA === 360 && x > 229 && x < 235){
+                    if ((Math.abs(yB - yA) > 4) && (Math.abs(yB - yA) < 40)){
+                        return
+                    }
+                    if ((dirB + dirA === 360 && x > 229 && x < 235)){
                         // console.log('Ball does not turn on touching paddle, it turned on right edge');
-                        t.reportCase('paddle_bounce', false);}
+                        t.reportCase('paddle_bounce', false);
+                    }
+                    else if  (x > 229 && x < 235){
+                        // console.log('Ball does not turn on touching paddle, it turned on right edge');
+                        t.reportCase('paddle_bounce', false);
+                    }
                     else {
                         // console.log('Ball turn on touching paddle');
                         t.reportCase('paddle_bounce', true);
@@ -239,19 +254,20 @@ const testScript =
                 }
             },
             stateSaver: (t) =>
-                {   console.log('before: ', t.getSpriteByName('Ball', 'old').dir);
-                    return {ballDir: t.getSpriteByName('Ball', 'old').dir,
+            {   console.log('before: ', t.getSpriteByName('Ball', 'old').dir);
+                return {ballDir: t.getSpriteByName('Ball', 'old').dir,
                     ballX: t.getSpriteByName('Ball', 'old').posX,
                     ballY: t.getSpriteByName('Ball', 'old').posY,
                     time: Date.now()}},
-            delay: 1,
-            once: false,
+            delay: 0,
+            once: true,
             addOnStart: true,
             debounce: true
         },
         {
             name: 'paddle_score',
-            precondition: (t) => t.spriteIsTouching('Right Paddle', 'Ball'),
+            precondition: (t) => t.spriteIsTouching('Right Paddle', 'Ball') ||
+                t.spriteIsTouching('Ball', 'Right Paddle'),
             callback: (t, oldState) => {
                 const score = t.getAllVars();
                 console.log("score after paddle boounc: ", score);
@@ -272,8 +288,9 @@ const testScript =
         {
             name: 'edge_bounce',
             precondition: (t) => {
-                return t.spriteIsOnEdge('Ball', ['left', 'top', 'bottom'])},
+                return t.spriteIsOnEdge('Ball', t.getBounceEdge())},
             callback: (t, oldState) => {
+                t.reportCase('space_move', true);
                 const ballDir = t.getSpriteByName('Ball').dir;
                 if (ballDir !== oldState.ballDir) {
                     t.reportCase('edge_bounce', true);
@@ -292,7 +309,7 @@ const testScript =
 
         {
             name: 'reset_score',
-            precondition: (t) => t.spriteIsOnEdge('Ball', ['right']) &&
+            precondition: (t) => t.spriteIsOnEdge('Ball', t.getResetEdge()) &&
                 t.getAllVars() !== 0,
             callback: (t, oldState) => {
                 const score = t.getAllVars();
@@ -313,8 +330,9 @@ const testScript =
         },
         {
             name: 'reset_ball',
-            precondition: (t) => t.spriteIsOnEdge('Ball', ['right']),
+            precondition: (t) => t.spriteIsOnEdge('Ball', t.getResetEdge()),
             callback: (t, oldState) => {
+                t.reportCase('space_move', true);
                 const ballX = t.getSpriteByName('Ball').posX;
                 const ballY = t.getSpriteByName('Ball').posY;
                 if (ballX < 10 && ballX > -10 && ballY < 10 && ballY > -10) {
@@ -322,7 +340,6 @@ const testScript =
                 } else {
                     t.reportCase('reset_ball', false);
                 }
-                t.addTestCaseByName('waitToPressSpace');
             },
             stateSaver: (t) => ({
                 score: t.getAllVars('old')
@@ -330,19 +347,6 @@ const testScript =
             delay: 5,
             once: false,
             debounce: true,
-            addOnStart: true
-        },
-        // controls
-        {
-            name: 'waitToPressSpace',
-            precondition: (t) => true,
-            callback: (t, oldState) => {
-                t.removeTestCaseByName('testBallNotMoveBeforeSpace');
-                t.addTestCaseByName('pressSpaceKey');
-            },
-            stateSaver: (t) => null,
-            delay: 50,
-            once: true,
             addOnStart: true
         }
     ];

@@ -1,15 +1,12 @@
 class Input {
 
-    constructor (id, timeout = 1, release = () => null) {
+    constructor (vm, name, timeout = 1) {
 
-        this.id = id;
+        this.vm = vm;
+
+        this.name = name;
 
         this.timeout = timeout;
-
-        /**
-         * @type{()=>null} The callback for releasing the input.
-         */
-        this._release = release;
 
         /**
          * @type{boolean} Inactive inputs will be cleaned
@@ -27,7 +24,7 @@ class Input {
 
     release () {
         this.active = false;
-        this._release();
+        this.vm.ide.stage.removePressedKey(this.name);
     }
 }
 
@@ -46,18 +43,19 @@ class Inputs {
     }
 
     inputKey (key, duration) {
+        this.vm.ide.world().worldCanvas.focus();
         this.vm.ide.stage.fireKeyEvent(key);
+        // console.log('key: ', key);
 
         const keyInput = this._inputs.find(x => x.name === key);
         if (keyInput) {
-            keyInput.timeout = duration;
-        } else {
-            this._inputs.push(new Input(
-                key,
-                duration,
-                () => this.vm.ide.stage.removePressedKey(key)
-            ));
+            keyInput.active = false;
         }
+        this._inputs.push(new Input(this.vm,
+            key,
+            duration
+        ));
+
     }
 
     tick () {

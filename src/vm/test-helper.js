@@ -24,7 +24,7 @@ class TestHelper {
     }
 
     getSpriteByName (name, state='cur') {
-        if (state === 'cur') {
+        if (state === 'cur' || this.vm.state.old === undefined) {
             return this.vm.sprites.data[name];
         }
         else {
@@ -33,6 +33,7 @@ class TestHelper {
     }
 
     spriteIsTouching (nameA, nameB) {
+        // console.log(this.getSpriteByName(nameA).touchSprites);
         return this.getSpriteByName(nameA).touchSprites.includes(nameB);
     }
 
@@ -47,7 +48,7 @@ class TestHelper {
     reportCase (testName, status, info) {
 
         if (testName === 'threeSecStateUnchanged'){
-            this.vm.stoppedStateProxy[status ? 'success' : 'fail']++;
+            this.vm.stoppedStateProxy[status ? 'success' : 'fail'] = this.vm.stoppedStateProxy[status ? 'success' : 'fail'] + 1;
         }
         else if (Object.keys(this.vm.stat).includes(testName)) {
             this.vm.stat[testName][status ? 'success' : 'fail']++;
@@ -76,6 +77,26 @@ class TestHelper {
         const tr = this.vm.stepper.testCases.find(t => t.name === name);
         if (tr !== undefined) {
             return this.bindTestCase(tr);
+        }
+    }
+
+    getBounceEdge (){
+        const paddleX = this.getSpriteByName('Right Paddle').posX;
+        if (paddleX > 0){
+            return ['left', 'top', 'bottom'];
+        }
+        else {
+            return ['right', 'top', 'bottom'];
+        }
+    }
+
+    getResetEdge (){
+        const paddleX = this.getSpriteByName('Right Paddle').posX;
+        if (paddleX > 0){
+            return ['right'];
+        }
+        else {
+            return ['left'];
         }
     }
 

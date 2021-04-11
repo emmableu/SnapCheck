@@ -6,26 +6,25 @@ const inputScript =
             precondition: (t) => true,
             callback: (t, oldState) => {
                 t.removeTestCaseByName('testBallNotMoveBeforeSpace');
-                t.addTestCaseByName('pressSpaceKey');
+                // t.addTestCaseByName('pressSpaceKey');
+                t.inputKey('space', 2);
             },
             stateSaver: (t) => null,
-            delay: 10,
+            delay: 400,
             once: true,
             addOnStart: true
         },
-        {
-            name: 'pressSpaceKey',
-            precondition: (t) => true,
-            callback: (t, oldState) => {
-                t.inputKey('space', 2);
-                // t.addTestCase(t.getTestCaseByName('followBall'));
-                // t.addTestCase(t.getTestCaseByName('randomUpDownKey'));
-            },
-            stateSaver: (t) => null,
-            delay: 0,
-            once: true,
-            addOnStart: false
-        },
+        // {
+        //     name: 'pressSpaceKey',
+        //     precondition: (t) => true,
+        //     callback: (t, oldState) => {
+        //         t.inputKey('space', 2);
+        //     },
+        //     stateSaver: (t) => null,
+        //     delay: 0,
+        //     once: true,
+        //     addOnStart: false
+        // },
         {
             name: 'followBall',
             precondition: (t) => true,
@@ -33,37 +32,38 @@ const inputScript =
                 const paddleY = t.getSpriteByName('Right Paddle').posY;
                 const ballY = t.getSpriteByName('Ball').posY;
                 const ballX = t.getSpriteByName('Ball').posX;
-                if (oldState.ballY === ballY && oldState.ballX === ballX){
+
+                if (oldState.ballX === ballX && oldState.ballY === ballY){
                     return;
                 }
-                if (paddleY < oldState.ballY - 5) {
-                    t.inputKey('up arrow', 10);
-                } else if (paddleY > oldState.ballY + 5) {
-                    t.inputKey('down arrow', 10);
+                if (paddleY + 4 < ballY) {
+                    t.inputKey('up arrow', 4);
+                } else if (paddleY - 4 > ballY) {
+                    t.inputKey('down arrow', 4);
                 }
             },
             stateSaver: (t) => {
                 return {
-                    ballY: t.getSpriteByName('Ball').posY,
-                    ballX: t.getSpriteByName('Ball').posX,
+                    ballY: t.getSpriteByName('Ball', 'old').posY,
+                    ballX: t.getSpriteByName('Ball', 'old').posX,
                     time: Date.now()
                 }
             },
-            delay: 5,
+            delay: 1,
             once: false,
-            addOnStart: false
+            addOnStart: true,
+            debounce: false,
         },
         {
             name: 'ballTouchPaddleStopFollow',
             precondition: (t) => t.spriteIsTouching('Right Paddle', 'Ball'),
             callback: (t, oldState) => {
                 t.removeTestCaseByName('followBall');
-                t.addTestCaseByName('evadeBall');
             },
             stateSaver: (t) => null,
             delay: 0,
             once: false,
-            addOnStart: false,
+            addOnStart: true,
             debounce: true
         },
         {
@@ -91,29 +91,6 @@ const inputScript =
                 }
             },
             stateSaver: (t) => null,
-            delay: 5,
-            once: false,
-            addOnStart: false
-        },
-        {
-            name: 'evadeBall',
-            precondition: (t) => true,
-            callback: (t, oldState) => {
-                const paddleY = t.getSpriteByName('Right Paddle').posY;
-                const ballY = t.getSpriteByName('Ball').posY;
-                const ballX = t.getSpriteByName('Ball').posX;
-                if (oldState.ballY === ballY && oldState.ballX === ballX){
-                    return;
-                }
-                if (paddleY < 170) {
-                    t.inputKey('up arrow', 2);
-                }
-            },
-            stateSaver: (t) => ({
-                ballY: t.getSpriteByName('Ball').posY,
-                ballX: t.getSpriteByName('Ball').posX,
-                time: Date.now()
-            }),
             delay: 5,
             once: false,
             addOnStart: false
@@ -152,10 +129,10 @@ const inputScript =
             name: 'upKey',
             precondition: (t) => true,
             callback: (t, oldState) => {
-                t.inputKey('up arrow', 20);
+                t.inputKey('up arrow', 50);
             },
             stateSaver: (t) => null,
-            delay: 5,
+            delay: 1,
             once: false,
             addOnStart: false
         },
@@ -163,10 +140,10 @@ const inputScript =
             name: 'downKey',
             precondition: (t) => true,
             callback: (t, oldState) => {
-                t.inputKey('down arrow', 20);
+                t.inputKey('down arrow', 50);
             },
             stateSaver: (t) => null,
-            delay: 5,
+            delay: 1,
             once: false,
             addOnStart: false
         },
@@ -174,9 +151,9 @@ const inputScript =
             name: 'threeSecStateUnchanged',
             precondition: (t) => true,
             callback: (t, oldState) => {
+                console.log('testing three sec state unchanged');
                 const paddle = t.getSpriteByName('Right Paddle'),
                     ball = t.getSpriteByName('Ball');
-                console.log('checking threeSecStateUnchanged');
                 let unChanged = true;
                 for (const attr of ['posX', 'posY']){
                     if (paddle[attr] !== oldState.paddle[attr] ||
@@ -193,7 +170,7 @@ const inputScript =
                     ball: t.getSpriteByName('Ball')
                 }
             },
-            delay: 100,
+            delay: 600,
             once: false,
             addOnStart: true
         },
