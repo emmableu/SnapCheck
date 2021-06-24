@@ -1,4 +1,4 @@
-# SnapCheck FrontEnd
+# SnapCheck Front-end
 
 ## Project setup
 ```

@@ -22,7 +22,7 @@ To build, do:
 npm run build
 ```
 
-## SnapCheck Backend Server
+## SnapCheck Back-end Server
 SnapCheck makes use of a Python Flask backend server to batch test Scratch programs. We provide an example in the back_end folder. To start the  backend server, run `app.py` at the back_end. SnapCheck then automatically loads and tests the programs inside the alias_list folder.
 
 SnapCheck tests takes input scripts and test scripts. Sample input scripts and test scripts can be found in 
