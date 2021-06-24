@@ -16,10 +16,6 @@ back_end_express
 
 *project_list
 
-back_end/*alias_list
 *.idea
 back_end/__pycache__
-
-data
-
-back_end/compare.py
+*.pkl
