@@ -1,2 +1,0 @@
-,alias,key_up,upper_bound,key_down,lower_bound,not_move_before_space,space_move,paddle_bounce,paddle_score,edge_bounce,reset_score,reset_ball
-0,pong.xml,"{'success': 150, 'fail': 0}","{'success': 0, 'fail': 143}","{'success': 312, 'fail': 0}","{'success': 0, 'fail': 284}","{'success': 0, 'fail': 0}","{'success': 144, 'fail': 0}","{'success': 0, 'fail': 1}","{'success': 0, 'fail': 11}","{'success': 99, 'fail': 0}","{'success': 0, 'fail': 0}","{'success': 0, 'fail': 40}"

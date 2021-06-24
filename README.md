@@ -23,9 +23,9 @@ npm run build
 ```
 
 ## SnapCheck Backend Server
-SnapCheck makes use of a Python Flask backend server to batch test Scratch programs. We provide an example in the back_end folder. To start the  backend server, run `app.py` at the back_end. SnapCheck then automatically loads, tests and saves the test results to the [SnapCheck/backend/data](https://github.com/emmableu/SnapCheck/tree/master/back_end/data) folder. An example of the test result can be found in this [snapcheck_df.csv](https://github.com/emmableu/SnapCheck/blob/master/back_end/data/snapcheck_df.csv) file.  
+SnapCheck makes use of a Python Flask backend server to batch test Scratch programs. We provide an example in the back_end folder. To start the  backend server, run `app.py` at the back_end. SnapCheck then automatically loads and tests the programs inside the alias_list folder.
 
-SnapCheck testing takes input scripts and test scripts. Sample input scripts and test scripts can be found in 
+SnapCheck tests takes input scripts and test scripts. Sample input scripts and test scripts can be found in 
 [SnapCheck/src/script/input-script.js](https://github.com/emmableu/SnapCheck/blob/master/src/script/input-script.js) and
 [SnapCheck/src/script/test-script.js](https://github.com/emmableu/SnapCheck/blob/master/src/script/test-script.js).
 
