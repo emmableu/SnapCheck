@@ -1,14 +1,13 @@
 from flask import Flask, request
 from flask_restful import Resource, Api
-import xml.etree.ElementTree as ET
-from compare import *
 import os
 
 app = Flask(__name__)
 api = Api(app)
 
-# target_folder = 'full_alias_list'
-target_folder = 'replace_alias_list'
+target_folder = 'full_alias_list'
+last_alias = "pong.xml"
+
 class ReadList(Resource):
     def get(self):
         alias_list = os.listdir(target_folder)
@@ -33,7 +32,7 @@ class PostStatistics(Resource):
         new_row = {'alias': alias}
         new_row.update(eval(list(request.form.to_dict().keys())[0]))
 
-        if alias == '999_93.xml':
+        if alias == last_alias:
             snapcheck_df = pd.DataFrame(columns = list(new_row.keys()))
         else:
             snapcheck_df = load_obj('snapcheck_df', 'data')
@@ -46,7 +45,6 @@ class PostStatistics(Resource):
         if not found:
             snapcheck_df.loc[len(snapcheck_df)] = new_row
         save_obj(snapcheck_df, 'snapcheck_df', 'data')
-        check(snapcheck_df)
         return
 
 
