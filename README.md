@@ -23,8 +23,24 @@ npm run build
 ```
 
 ## SnapCheck Backend Server
-SnapCheck makes use of a Python Flask backend server to batch test Scratch programs. We provide an example in the back_end folder. To start the  backend server, run `app.py` at the back_end. SnapCheck then automatically loads, tests and saves the test results to the backend/data folder. An example of the test result can be found in  
+SnapCheck makes use of a Python Flask backend server to batch test Scratch programs. We provide an example in the back_end folder. To start the  backend server, run `app.py` at the back_end. SnapCheck then automatically loads, tests and saves the test results to the [SnapCheck/backend/data](https://github.com/emmableu/SnapCheck/tree/master/back_end/data) folder. An example of the test result can be found in this [snapcheck_df.csv](https://github.com/emmableu/SnapCheck/blob/master/back_end/data/snapcheck_df.csv) file.  
 
-Sample test files can be found in [SnapCheck/src/script/test-scripts.js](https://github.com/emmableu/SnapCheck/blob/master/src/script/test-script.js), sample
+SnapCheck testing takes input scripts and test scripts. Sample input scripts and test scripts can be found in 
+[SnapCheck/src/script/input-script.js](https://github.com/emmableu/SnapCheck/blob/master/src/script/input-script.js) and
+[SnapCheck/src/script/test-script.js](https://github.com/emmableu/SnapCheck/blob/master/src/script/test-script.js).
+
+## References
+A detailed description of SnapCheck can be found in this tools paper to ITiCSE'2021: [SnapCheck: Automated Testing for Snap Programs](https://arxiv.org/pdf/2104.11812.pdf).
+```
+@inproceedings{wang2021snapcheck,
+        author = {Wang, Wengran and Zhang, Chenhao and Stahlbauer, Andreas and Fraser, Gordon and Price, Thomas},
+        title = {SnapCheck: Automated Testing for Snap Programs},
+        year = {2021},
+        publisher = {Association for Computing Machinery},
+        journal = {ITiCSE’21 - Proceedings of the 2021 ACM Conference on Innovation and Technology in Computer Science Education},
+        numpages = {7},
+        series = {ITiCSE’21}
+        }
+```
 
 
