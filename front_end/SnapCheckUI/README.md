@@ -1,4 +1,4 @@
-# grab-testmaker
+# SnapCheck FrontEnd
 
 ## Project setup
 ```
