@@ -18,4 +18,8 @@ back_end_express
 
 *.idea
 back_end/__pycache__
+back_end/compare.py
+back_end/full_alias_list
+back_end/replace_alias_list
+back_end/data
 *.pkl

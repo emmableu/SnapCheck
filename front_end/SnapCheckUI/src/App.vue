@@ -1,60 +1,69 @@
 <template>
-  <v-app>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
-
-      <v-spacer></v-spacer>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
-    </v-app-bar>
-
-    <v-main>
-      <HelloWorld/>
-    </v-main>
-  </v-app>
+  <b-container>
+    <!--
+    <b-row class="md-1" align-h="start">
+      <b-col sm="2">
+          <b-button variant="outline-primary">Open Project</b-button>
+      </b-col>
+    </b-row>
+    -->
+    <Trigger 
+      v-for="(trigger, index) in triggers" 
+      v-bind:key="trigger.id" 
+      v-bind:tid="trigger.id"
+      v-on:remove="triggers.splice(index, 1)"
+    />
+    <b-row class="mt-1 mb-2" align-h="end">
+      <b-col sm="7.5">
+      </b-col>
+      <b-col sm="2.5">
+          <b-button variant="outline-primary" @click="saveTriggers()">Save Triggers To File</b-button>
+      </b-col>
+      <b-col sm="2">
+          <b-button pill variant="outline-secondary" @click="addTrigger()">
+            <b-icon icon="plus" aria-label="Plus">
+            </b-icon>
+            Add Trigger
+          </b-button>
+      </b-col>
+    </b-row>
+  </b-container>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld';
+// import TriggerStore from './store/triggers-store'
+import Trigger from './components/Trigger.vue';
 
 export default {
-  name: 'App',
-
+  name: 'TriggerList',
   components: {
-    HelloWorld,
+    Trigger
   },
-
-  data: () => ({
-    //
-  }),
-};
+  data: function () {
+    return {
+      triggers: [{
+        id: 0
+      },
+      {
+        id: 1
+      },
+      ],
+      cnt: 3
+    }
+  },
+  methods: {
+    addTrigger: function () {
+      const idNow = this.cnt++
+      this.triggers.push({
+        id: idNow,
+      })
+    },
+    saveTriggers: function () {
+      console.log(this.$children.map(c => c.$data.trigger.name))
+      console.log(this.$children.map(c => c.$data.trigger.delay))
+      console.log(this.$children.map(c => c.$data.trigger.once))
+      console.log(this.$children.map(c => c.$data.trigger.addOnStart));
+    }
+  }
+}
 </script>
